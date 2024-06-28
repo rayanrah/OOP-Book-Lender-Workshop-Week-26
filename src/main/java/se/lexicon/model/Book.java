@@ -17,6 +17,7 @@ public class Book {
         this.id = generateIdNumber(); // instead of this: UUID.randomUUID().toString().substring(0, 8);
         setTitle(title);
         this.author = author;
+        this.available=true;
     }
 
     // Constructor 02:
@@ -38,9 +39,18 @@ public class Book {
         this.title = title;
     }
 
+    public String getId() {
+        return id;
+    }
+
+    public boolean isAvailable () {
+        return available;
+}
+
     // ????
     public void setBorrower(Person borrower) {
         this.borrower = borrower;
+        this.available = (borrower == null);
     }
 
     // Method to generate the bookId.
@@ -55,24 +65,14 @@ public class Book {
         }
     }
 
-    // Getter Method:
-    public String getBookInformation() {
-        String result = "The book id: " + id + "with title: " + title + " written by: " + author;
-        return result;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
     // Method to check if the book is available or not and who has rented.
-    public String getBorrowedBookInformation() {
-        String result = "The book id: " + id + "with title: " + title + " written by: " + author;
-        if (borrower != null) {
-            result += " the book is not available and borrowed by: " + borrower.getPersonalInformation();
-        } else {
-            result += " The book is available: ";
-        }
-        return result;
+    /*public String getBookInformation () {
+        String borrowerInfo = borrower != null ? " PersonId: " + borrower.getId() : "-";
+        return String.format("Book{ id=%s, title=%s, author=%s, available=%b, borrower=%s }", id, title, author, available, borrowerInfo);
+    }*/
+
+     public String getBookInformation() {
+        return "Book{ id=" + id + ", title=" + title + ", author=" + author + ", available=" + available +
+                ", borrower=" + (borrower != null ? " PersonId: " + borrower.getPersonInformation() : "-") + " } ";
     }
 }

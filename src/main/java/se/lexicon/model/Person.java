@@ -1,24 +1,29 @@
 package se.lexicon.model;
 
-import javax.sound.midi.Sequencer;
+import java.util.Arrays;
 
 public class Person {
 
     // Specify the variables.
-    private int sequencer=0;
+    private static int sequencer = 0;
+
     private final int id;
     private String firstName;
     private String lastName;
-    private Book loanBook;
-    private Book returnBook;
+
+    private Book[] borrowedBooks;
 
     // Constructor:
     public Person(String firstName, String lastName) {
         this.id = getNextId(); // Increment and assign sequencer
         setFirstName(firstName); // this.firstName = firstName;
         setLastName(lastName);
+        this.borrowedBooks = new Book[0];
     }
 
+    private static int getNextId() {
+        return ++sequencer; // Increment and return the next ID
+    }
 
     // setter for firstName:
     public void setFirstName(String firstName) {
@@ -36,47 +41,42 @@ public class Person {
         this.lastName = lastName;
     }
 
-    private int getNextId () {
-        return ++sequencer; // Increment and return the next ID
-    }
-
     public int getId() {
         return id;
     }
 
-    // Getter Method:
-    public String getPersonalInformation () {
-        String result = "ID number: " +id +" with First Name: " + firstName + " and the Last Name: " + lastName;
-        return result;
+    public Book[] getBorrowedBooks() {
+        return borrowedBooks;
     }
 
+    public void loanBook(Book book) {
+        if (book == null) throw new IllegalArgumentException("Book cannot be null");
+        if (!book.isAvailable()) throw new IllegalArgumentException("Book is not available");
 
-    public void setReturnBook(Book returnBook) {
-        this.returnBook = returnBook;
+        book.setBorrower(this);
+        Book[] newArray = Arrays.copyOf(borrowedBooks, borrowedBooks.length + 1);
+        newArray[newArray.length - 1] = book;
+        borrowedBooks = newArray;
     }
 
-    public String getReturnBookPersonalInfo () {
-        String result = "ID number: " +id +" with First Name: " + firstName + " and the Last Name: " + lastName;
-        if (returnBook != null ) {
-            result+= " hasn't returned the book with the title: " + returnBook.getTitle();
-        }else {
-            result+= " has no book to return.";
+    public void returnBook(Book book) {
+        if (book == null) throw new IllegalArgumentException("Book cannot be null");
+
+        Book[] newArray = new Book[borrowedBooks.length - 1];
+        int counter = 0;
+        for (Book elementArray : borrowedBooks) {
+            if (elementArray.getId().equals(book.getId())) {
+                book.setBorrower(null);
+                continue;
+            }
+            newArray[counter++] = elementArray;
         }
-        return result;
+        borrowedBooks = newArray;
     }
 
-    public void setLoadBook(Book loadBook) {
-        this.loanBook = loadBook;
-    }
-
-    public String getTheLoanerInfo () {
-        String result = "ID number: " +id +" with First Name: " + firstName + " and the Last Name: " + lastName;
-        if (loanBook != null ) {
-            result+= "  currently has rented following books: " + loanBook.getTitle();
-        }else {
-            result+= " has no book to return.";
-        }
-        return result;
+    public String getPersonInformation() {
+        return "Person{ id=" + id + ", firstName='" + firstName + ", lastName='" + lastName +
+                ",number of borrowedBooks=" + borrowedBooks.length + '}';
     }
 
 }
